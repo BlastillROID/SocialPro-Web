@@ -1,0 +1,23 @@
+social_pro_complaint:
+    resource: "@SocialProBundle/Resources/config/routing/complaint.yml"
+    prefix:   /complaint
+
+social_pro_homepage:
+    path:     /
+    defaults: { _controller: SocialProBundle:Default:index }
+social_pro_newsfeed:
+    path:     /newsfeed
+    defaults: { _controller: SocialProBundle:Default:newsfeed }
+admin_home:
+    path:     /admin
+    defaults: { _controller: SocialProBundle:Default:admin }
+admin_show_userlist:
+    path:     /admin/userlist
+    defaults: { _controller: SocialProBundle:Admin:showUsers }
+complaint_index_backend:
+    path:     /backendlistcomplaint
+    defaults: { _controller: "SocialProBundle:Complaint:backendlistcomplaint" }
+complaint_show_backend:
+    path:     /backendlistcomplaint/{id}/backendshowcomplaint
+    defaults: { _controller: "SocialProBundle:Complaint:backendshowcomplaint" }
+    methods:  GET
