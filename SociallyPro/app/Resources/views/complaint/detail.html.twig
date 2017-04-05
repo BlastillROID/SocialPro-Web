@@ -4,6 +4,23 @@
     {% if is_granted('ROLE_USER') %}
         {% block content  %}
             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+            <script>
+
+                    function ajaxCall() {
+                        $.ajax({
+                            url: "{{ path('ajax_complaint_edit') }}",
+                            method: "post",
+                            data: {id: {{ complaint.complaintId }} }
+                        }).done(function (msg) {
+                            // refreshlit();
+                            document.getElementById('status').style.color = 'green';
+                            document.getElementById("check").disabled= true;
+                            document.getElementById('status').innerHTML= 'done';
+                        });
+                    }
+
+
+            </script>
             <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
                   rel="stylesheet">
             <!-- Header
@@ -167,10 +184,15 @@
                                     <tr>
                                         <th>Status</th>
                                         {% if complaint.status=="en attente" %}
-                                         <td style="display: inline-block"><p style="color:red">{{ complaint.status }} </p> <label  class="switch">
-                                                 <input type="checkbox">
+                                         <td style="display: inline-block"><p id="status"style="color:red">{{ complaint.status }} </p> <label  class="switch">
+                                                 <input type="checkbox" id="check" onchange="ajaxCall()">
                                                  <div class="slider"></div>
                                              </label></td>
+                                        {% elseif complaint.status=="done" %}
+                                            <td style="display: inline-block"><p style="color:green">{{ complaint.status }} </p> <label  class="switch">
+                                                    <input type="checkbox" checked disabled>
+                                                    <div class="slider"></div>
+                                                </label></td>
                                         {% endif %}
                                     </tr>
                                     <tr>
@@ -179,6 +201,27 @@
                                     </tr>
                                     </tbody>
                                 </table>
+
+                                <table id="table2">
+                                    <thead>
+                                    <tr>
+                                        <th>Id</th>
+                                        <th>Msg</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for compmsg in compmsgs %}
+                                        <tr>
+                                            <td><a href="{{ path('compmsg_show', { 'id': compmsg.id }) }}">{{ compmsg.id }}</a></td>
+                                            <td>{{ compmsg.msg }}</td>
+                                            <td>{% if compmsg.date %}{{ compmsg.date|date('Y-m-d H:i:s') }}{% endif %}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+
 
                                 <ul>
                                     <li>
@@ -190,6 +233,10 @@
                                         {{ form_end(delete_form) }}
                                     </li>
                                 </ul>
+                                {{ form_start(form) }}
+                                {{ form_widget(form) }}
+                                <input type="submit" value="Create" />
+                                {{ form_end(form) }}
                             </div>
 
                         </div>

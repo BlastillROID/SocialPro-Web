@@ -3,9 +3,12 @@
 namespace SocialProBundle\Controller;
 
 use SocialProBundle\Entity\Complaint;
+use SocialProBundle\Entity\Compmsg;
+use SocialProBundle\Form\ComplaintType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\UserBundle\Model\UserInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -92,14 +95,32 @@ class ComplaintController extends Controller
             'delete_form' => $deleteForm->createView(),
         ));
     }
-    public function detailAction(Complaint $complaint)
+    public function detailAction(Complaint $complaint,Request $request)
     {   $user = $this->getUser();
         $deleteForm = $this->createDeleteForm($complaint);
+        $compmsg = new Compmsg();
+        $form = $this->createForm('SocialProBundle\Form\CompmsgType', $compmsg);
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $compmsg->setUser($user);
+            $compmsg->setComplaint($complaint);
+            $compmsg->setDate( new \DateTime());
+            $em->persist($compmsg);
+            $em->flush($compmsg);
 
+            return $this->redirectToRoute('complaint_detail', array('id' => $complaint->getComplaintId()));
+        }
+        $em = $this->getDoctrine()->getManager();
+        $compmsgs = $em->getRepository('SocialProBundle:Compmsg')->findmsg($complaint);
         return $this->render('complaint/detail.html.twig', array(
             'complaint' => $complaint,
             'delete_form' => $deleteForm->createView(),
-            'user' => $user
+            'user' => $user,
+            'compmsgs' => $compmsgs,
+            'form' =>$form->createView()
+
+
         ));
     }
 
@@ -124,6 +145,28 @@ class ComplaintController extends Controller
             'edit_form' => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         ));
+    }
+
+
+    public function ajaxeditAction(Request $req)
+    {
+       /* $em =$this->getDoctrine()->getManager();
+        $complaint=$em->getRepository("SocialProBundle:Complaint")->find($id);
+        $complaint->setStatus("done");
+        $em->persist($complaint);
+        $em->flush();
+        return new Response();*/
+        $em =$this->getDoctrine()->getManager();
+        if($req->isXmlHttpRequest()){
+            $id = $req->get('id');
+            $complaint=$em->getRepository("SocialProBundle:Complaint")->find($id);
+            $complaint->setStatus("done");
+            $em->persist($complaint);
+            $em->flush();
+            return new Response();
+        }
+
+
     }
 
     /**

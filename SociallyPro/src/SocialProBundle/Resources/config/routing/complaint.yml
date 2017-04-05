@@ -25,7 +25,11 @@ complaint_delete:
 complaint_detail:
     path:     /{id}/detail
     defaults: { _controller: "SocialProBundle:Complaint:detail" }
-    methods:  GET
+    methods:  [GET, POST]
+ajax_complaint_edit:
+    path:     /
+    defaults: { _controller: "SocialProBundle:Complaint:ajaxedit" }
+    methods:  [GET, POST]
 
 
 

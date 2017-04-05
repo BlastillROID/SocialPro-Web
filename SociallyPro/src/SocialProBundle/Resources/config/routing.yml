@@ -1,7 +1,9 @@
 social_pro_complaint:
     resource: "@SocialProBundle/Resources/config/routing/complaint.yml"
     prefix:   /complaint
-
+social_pro_compmsg:
+    resource: "@SocialProBundle/Resources/config/routing/compmsg.yml"
+    prefix:   /compmsg
 social_pro_homepage:
     path:     /
     defaults: { _controller: SocialProBundle:Default:index }
